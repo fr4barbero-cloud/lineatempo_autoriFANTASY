@@ -1,0 +1,868 @@
+<!doctype html>
+<html lang="it">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Autori del Fantasy</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:wght@400;700&display=swap" rel="stylesheet">
+<style>
+:root{--ink:#2b2118;--muted:#6f6255;--accent:#5b3f96;--line:#8b6a3c;--line2:#e1bf7b;--star:#f0c24e;--shadow:0 10px 28px rgba(0,0,0,.12);--soft:0 6px 18px rgba(0,0,0,.10);--overlay:rgba(28,20,12,.18)}
+*{box-sizing:border-box} html,body{height:100%}
+body{margin:0;font-family:'Atkinson Hyperlegible',system-ui,sans-serif;color:var(--ink);background:radial-gradient(circle at top,#fff7ea 0%,#f7f1e6 38%,#efe3cf 100%);overflow:hidden}
+.app{min-height:100%;display:flex;flex-direction:column;gap:10px;padding:12px}
+.topbar{background:linear-gradient(180deg,#fffaf3,#f5ead7);border:2px solid #d8be93;border-radius:22px;box-shadow:var(--soft);padding:14px 16px 12px}
+h1{margin:0;text-align:center;font-size:clamp(1.4rem,2.5vw,2.2rem);letter-spacing:.04em;color:#3a2a18;line-height:1.1}
+.hint{margin-top:8px;text-align:center;color:var(--muted);font-size:.95rem;line-height:1.35}
+.stage{position:relative;flex:1 1 auto;min-height:0;display:flex;align-items:center;justify-content:center;overflow:hidden;border:2px solid #d8be93;border-radius:24px;background:linear-gradient(180deg,rgba(255,251,242,.96),rgba(247,238,224,.96));box-shadow:var(--shadow);padding:10px}
+.timeline-wrap{position:relative;width:min(1500px,100%);height:min(100%,860px);display:flex;align-items:flex-start;justify-content:space-between;gap:10px;padding:10px 12px 140px}
+.timeline-line{
+  position:absolute;
+  left:60px !important;
+  right:60px !important;
+  top:40px !important;
+  height:14px;
+  border-radius:999px;
+  background:linear-gradient(90deg,#d8c8f0,#cbb6eb,#d8c8f0);
+  z-index:1;
+}
+.timeline-line::before{content:'';position:absolute;left:-17px;top:50%;width:34px;height:34px;border-radius:50%;background:#cbb6eb;transform:translateY(-50%)}
+.timeline-line::after{content:'';position:absolute;right:-28px;top:50%;transform:translateY(-50%);width:0;height:0;border-top:20px solid transparent;border-bottom:20px solid transparent;border-left:34px solid #cbb6eb}
+.event{position:relative;width:clamp(185px,16vw,240px);display:flex;flex-direction:column;align-items:center;z-index:2}
+.card-shell{display:flex;flex-direction:column;align-items:center;width:100%}
+.card-label{width:100%;background:linear-gradient(180deg,#fff8ea,#f2e0bf);border:3px solid #d8be93;border-bottom:none;border-radius:18px 18px 0 0;padding:10px 10px 8px;box-shadow:0 6px 14px rgba(0,0,0,.10);text-align:center}
+.author,.saga{display:block;text-transform:uppercase;font-weight:800;letter-spacing:.03em;line-height:1.08}
+.author{font-size:clamp(.95rem,1.25vw,1.18rem);color:#2c2016}
+.saga{margin-top:6px;font-size:clamp(.78rem,1vw,.95rem);color:var(--accent)}
+.card{width:100%;aspect-ratio:.83/1;position:relative;perspective:1200px;cursor:pointer}
+.card-inner{position:absolute;inset:0;transform-style:preserve-3d;transition:transform .7s ease}
+.card.is-flipped .card-inner{transform:rotateY(180deg)}
+.card-face{position:absolute;inset:0;backface-visibility:hidden;background:linear-gradient(180deg,#fffdf8,#f8f0e2);border:3px solid #d8be93;border-top:none;border-radius:0 0 18px 18px;box-shadow:var(--soft);overflow:hidden}
+.card-front img{width:100%;height:100%;object-fit:cover;object-position:center top;display:block}
+.card-back{transform:rotateY(180deg);padding:10px;display:flex;flex-direction:column;gap:8px;overflow:auto;-webkit-overflow-scrolling:touch}
+.back-title{display:flex;justify-content:space-between;gap:10px;align-items:flex-start}
+.back-heading{font-size:clamp(.8rem,.95vw,.92rem);font-weight:800;text-transform:uppercase;line-height:1.15;color:#3b2b1d}
+.close-btn{flex:0 0 auto;width:34px;height:34px;border-radius:50%;border:2px solid #c89d58;background:linear-gradient(180deg,#fff6de,#efd09a);color:#4b3110;cursor:pointer;font-size:.92rem;box-shadow:0 3px 8px rgba(0,0,0,.12)}
+
+.card-text{margin:0;font-size:clamp(.7rem,.8vw,.8rem);line-height:1.34;color:#2e241b}
+.card-text strong,.modal-text strong{display:block;margin-bottom:2px;text-transform:uppercase}
+.film-link{margin-top:auto;display:inline-block;width:max-content;background:linear-gradient(180deg,#f5dfad,#e3bc73);border:2px solid #b88b43;color:#34220e;text-decoration:none;font-weight:800;font-size:.76rem;padding:6px 10px;border-radius:10px;text-transform:uppercase}
+.film-link.placeholder{opacity:.82}
+.back-actions{margin-top:auto;display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+.date-wrap{margin-top:8px;display:flex;flex-direction:column;align-items:center;gap:4px}
+.date{font-size:clamp(.98rem,1.2vw,1.18rem);font-weight:800;color:#4a3928;background:rgba(255,250,240,.92);display:inline-block;padding:8px 12px;border-radius:999px;border:2px solid #dbc195;white-space:nowrap}
+.stem{width:4px;height:42px;border-radius:999px;background:linear-gradient(180deg,#c9a35a,#7f5c2e)}
+.star{font-size:1.8rem;color:var(--star);line-height:1}
+.modal{position:fixed;inset:0;display:none;align-items:center;justify-content:center;background:var(--overlay);z-index:9999;padding:14px}
+.modal.open{display:flex}
+.modal-card{width:min(94vw,1240px);height:min(92vh,860px);position:relative;transform-style:preserve-3d;transition:transform .75s ease;cursor:pointer}
+.modal-card.is-flipped{transform:rotateY(180deg)}
+.modal-side{position:absolute;inset:0;backface-visibility:hidden;background:linear-gradient(180deg,rgba(255,253,248,.98),rgba(247,238,223,.98));border:3px solid #d8be93;border-radius:26px;box-shadow:0 18px 46px rgba(0,0,0,.22);overflow:hidden}
+.modal-front{display:grid;grid-template-columns:minmax(320px,44%) 1fr;height:100%}
+.modal-front img{width:100%;height:100%;object-fit:cover;object-position:center top;display:block}
+.modal-front-info,.modal-back-body{padding:24px;display:flex;flex-direction:column;gap:16px;overflow:auto;-webkit-overflow-scrolling:touch}
+.modal-back{transform:rotateY(180deg)}
+.modal-top{display:flex;justify-content:space-between;align-items:flex-start;gap:12px}
+.modal-heading span{display:block;text-transform:uppercase;font-weight:800;line-height:1.08}
+.modal-heading .modal-author{font-size:clamp(1.5rem,2.4vw,2.6rem);color:#2d2014}
+.modal-heading .modal-saga{font-size:clamp(1.05rem,1.7vw,1.6rem);color:var(--accent);margin-top:8px}
+.modal-year{display:inline-block;width:max-content;font-size:1.12rem;font-weight:800;color:#4a3928;background:rgba(255,250,240,.96);padding:9px 13px;border-radius:999px;border:2px solid #dbc195}
+.modal-help{font-size:1rem;color:var(--muted);line-height:1.45}
+.modal-text{margin:0;font-size:clamp(1rem,1.35vw,1.34rem);line-height:1.7;color:#2d2419}
+.modal-bottom{margin-top:auto;display:flex;gap:12px;flex-wrap:wrap;align-items:center}
+@media (max-width:1100px){.timeline-wrap{gap:8px;padding-left:8px;padding-right:8px}.event{width:clamp(160px,15vw,210px)}}
+@media (max-width:900px){.stage{padding:8px}.timeline-wrap{padding-bottom:128px}.modal-front{grid-template-columns:1fr}.modal-front .image-side{height:300px}}
+@media (max-width:640px){.app{padding:8px;gap:8px}.topbar{padding:10px}.title{font-size:1.16rem}.hint{font-size:.82rem}.stage{border-radius:18px;padding:6px}.timeline-wrap{gap:6px;padding:6px 6px 108px}.event{width:150px}.author{font-size:.88rem}.saga{font-size:.74rem}.date{font-size:.92rem}.stem{height:34px}.star{font-size:1.45rem}.modal-card{width:100%;height:min(94vh,860px)}.modal-front{grid-template-columns:1fr}.modal-front .image-side{height:240px}.modal-front-info,.modal-back-body{padding:16px}.modal-help{font-size:.9rem}}
+
+/* ===== VERSIONE PULITA: ZOOM FLASH CARD X2 ===== */
+body{
+  overflow:auto !important;
+}
+.stage{
+  overflow:auto !important;
+  padding:32px 110px 72px 110px !important;
+}
+.timeline-wrap{
+  width:max-content !important;
+  min-width:100% !important;
+  height:min(100%,900px) !important;
+  align-items:flex-start !important;
+  justify-content:flex-start !important;
+  gap:30px !important;
+  padding:18px 130px 190px 130px !important;
+  overflow:visible !important;
+  isolation:isolate;
+}
+.timeline-line{
+  position:absolute;
+  left:60px !important;
+  right:60px !important;
+  top:40px !important;
+  height:14px;
+  border-radius:999px;
+  background:linear-gradient(90deg,#d8c8f0,#cbb6eb,#d8c8f0);
+  z-index:1;
+}
+.event{
+  position:relative !important;
+  width:clamp(185px,16vw,240px) !important;
+  overflow:visible !important;
+  z-index:2;
+}
+.card-shell{
+  position:relative !important;
+  width:100%;
+  overflow:visible !important;
+  transform-origin:center center;
+  transition:transform .34s ease, filter .34s ease;
+  will-change:transform;
+}
+.event:hover,
+.event:focus-within{
+  z-index:999 !important;
+}
+.event:hover .card-shell,
+.event:focus-within .card-shell{
+  transform:scale(2) !important;
+  filter:drop-shadow(0 20px 34px rgba(0,0,0,.28));
+  z-index:1000 !important;
+}
+.card-label,
+.card,
+.date-wrap{
+  position:relative;
+  z-index:3;
+}
+.card{
+  overflow:hidden !important;
+  perspective:none !important;
+}
+.card-inner{
+  transform:none !important;
+  transition:none !important;
+  transform-style:flat !important;
+}
+.card-face{
+  backface-visibility:visible !important;
+}
+.card-back{
+  display:none !important;
+}
+.card:hover .card-front img,
+.card:focus-visible .card-front img{
+  transform:none !important;
+  filter:none !important;
+}
+.card-front img{
+  transition:none !important;
+}
+.modal{
+  display:none !important;
+}
+
+@media (max-width:1100px){
+  .stage{
+    padding:24px 90px 60px 90px !important;
+  }
+  .timeline-wrap{
+    gap:24px !important;
+    padding:18px 110px 170px 110px !important;
+  }
+  .timeline-line{
+  position:absolute;
+  left:60px !important;
+  right:60px !important;
+  top:40px !important;
+  height:14px;
+  border-radius:999px;
+  background:linear-gradient(90deg,#d8c8f0,#cbb6eb,#d8c8f0);
+  z-index:1;
+}
+}
+
+@media (max-width:900px){
+  .stage{
+    padding:18px 70px 48px 70px !important;
+  }
+  .timeline-wrap{
+    gap:20px !important;
+    padding:14px 90px 150px 90px !important;
+  }
+  .timeline-line{
+  position:absolute;
+  left:60px !important;
+  right:60px !important;
+  top:40px !important;
+  height:14px;
+  border-radius:999px;
+  background:linear-gradient(90deg,#d8c8f0,#cbb6eb,#d8c8f0);
+  z-index:1;
+}
+  .event:hover .card-shell,
+  .event:focus-within .card-shell{
+    transform:scale(1.45) !important;
+  }
+}
+
+@media (max-width:640px){
+  .app{
+    padding:8px !important;
+  }
+  .stage{
+    padding:12px 36px 34px 36px !important;
+  }
+  .timeline-wrap{
+    gap:14px !important;
+    padding:10px 64px 122px 64px !important;
+  }
+  .timeline-line{
+  position:absolute;
+  left:60px !important;
+  right:60px !important;
+  top:40px !important;
+  height:14px;
+  border-radius:999px;
+  background:linear-gradient(90deg,#d8c8f0,#cbb6eb,#d8c8f0);
+  z-index:1;
+}
+  .event{
+    width:150px !important;
+  }
+  .event:hover .card-shell,
+  .event:focus-within .card-shell{
+    transform:scale(1.18) !important;
+  }
+}
+
+
+/* ===== DIMENSIONE UNIFORME +25% ===== */
+.event{
+  width: 300px !important; /* dimensione fissa più grande */
+}
+
+.card{
+  aspect-ratio: 0.83/1;
+  width:100% !important;
+}
+
+.card-label{
+  font-size:1.05rem;
+}
+
+.date{
+  font-size:1.1rem;
+}
+
+
+/* ===== CARD TUTTE UGUALI (FIX DEFINITIVO) ===== */
+.timeline-wrap{
+  display:flex !important;
+  align-items:flex-start !important;
+}
+
+.event{
+  width:280px !important;
+  min-width:280px !important;
+  max-width:280px !important;
+  flex:0 0 280px !important;
+}
+
+.card{
+  width:100% !important;
+  height:340px !important;
+  aspect-ratio:auto !important;
+}
+
+.card-front img{
+  width:100% !important;
+  height:100% !important;
+  object-fit:cover !important;
+}
+
+.card-label{
+  width:100%;
+}
+
+
+
+/* ===== CARD PIU' PICCOLE PER VEDERLE TUTTE INSIEME ===== */
+.stage{
+  overflow:hidden !important;
+  padding:18px 60px 40px 60px !important;
+}
+
+.timeline-wrap{
+  width:100% !important;
+  min-width:0 !important;
+  justify-content:space-between !important;
+  gap:4px !important;
+  padding:10px 60px 125px 60px !important;
+  height:auto !important;
+}
+
+.timeline-line{
+  position:absolute;
+  left:60px !important;
+  right:60px !important;
+  top:40px !important;
+  height:14px;
+  border-radius:999px;
+  background:linear-gradient(90deg,#d8c8f0,#cbb6eb,#d8c8f0);
+  z-index:1;
+}
+
+.event{
+  width:190px !important;
+  min-width:190px !important;
+  max-width:190px !important;
+  flex:0 0 190px !important;
+}
+
+.card{
+  height:230px !important;
+}
+
+.card-label{
+  padding:8px 8px 6px !important;
+}
+
+.author{
+  font-size:.82rem !important;
+}
+
+.saga{
+  font-size:.68rem !important;
+  margin-top:4px !important;
+}
+
+.date-wrap{
+  margin-top:6px !important;
+}
+
+.date{
+  font-size:.88rem !important;
+  padding:6px 10px !important;
+}
+
+.stem{
+  height:30px !important;
+}
+
+.star{
+  font-size:1.35rem !important;
+}
+
+@media (max-width: 1400px){
+  .event{
+    width:175px !important;
+    min-width:175px !important;
+    max-width:175px !important;
+    flex:0 0 175px !important;
+  }
+  .card{
+    height:212px !important;
+  }
+  .timeline-wrap{
+    gap:8px !important;
+  }
+}
+
+@media (max-width: 1200px){
+  .stage{
+    overflow-x:auto !important;
+  }
+  .timeline-wrap{
+    width:max-content !important;
+    min-width:100% !important;
+  }
+}
+
+
+/* ===== FIX ZOOM FLASH CARD ===== */
+.stage,
+.timeline-wrap,
+.event,
+.card-shell{
+  overflow: visible !important;
+}
+
+.timeline-wrap{
+  isolation:isolate;
+}
+
+.event{
+  position: relative !important;
+}
+
+.card-shell{
+  position: relative !important;
+  z-index: 2;
+  transform-origin: center center;
+  transition: transform .28s ease, filter .28s ease;
+  will-change: transform;
+}
+
+.event:hover,
+.event:focus-within{
+  z-index: 999 !important;
+}
+
+
+
+.card-label,
+.date-wrap{
+  position: relative;
+  z-index: 4 !important;
+  backface-visibility: hidden;
+  transform: translateZ(0);
+}
+
+.card{
+  position: relative;
+  z-index: 3 !important;
+  overflow: hidden !important;
+  backface-visibility: hidden;
+  transform: translateZ(0);
+}
+
+.card-inner,
+.card-face,
+.card-front{
+  backface-visibility: hidden;
+  transform: translateZ(0);
+}
+
+.card-front img{
+  width: 100% !important;
+  height: 100% !important;
+  object-fit: cover !important;
+  object-position: center top !important;
+  image-rendering: auto !important;
+  transform: translateZ(0) scale(1) !important;
+  transition: none !important;
+  backface-visibility: hidden;
+  -webkit-backface-visibility: hidden;
+}
+
+.author,
+.saga,
+.date{
+  backface-visibility: hidden;
+  transform: translateZ(0);
+}
+
+.event:hover .author,
+.event:hover .saga,
+.event:hover .date,
+.event:focus-within .author,
+.event:focus-within .saga,
+.event:focus-within .date{
+  text-shadow: 0 1px 0 rgba(255,255,255,.35);
+}
+
+@media (max-width: 1200px){
+  .event:hover .card-shell,
+  .event:focus-within .card-shell{
+    transform: scale(1.35) translateZ(0) !important;
+  }
+}
+
+@media (max-width: 900px){
+  .event:hover .card-shell,
+  .event:focus-within .card-shell{
+    transform: scale(1.22) translateZ(0) !important;
+  }
+}
+
+
+/* ===== FIX TESTO NON SGRANATO ===== */
+.card-shell{
+  transform-origin:center center;
+}
+
+.event:hover .card-shell,
+.event:focus-within .card-shell{
+  transform: scale(1.75) translateZ(0);
+  filter: drop-shadow(0 22px 34px rgba(0,0,0,.28));
+}
+
+/* blocca scaling del testo */
+.card-label,
+.author,
+.saga,
+.date-wrap,
+.date{
+  transform: scale(1) !important;
+  backface-visibility: hidden;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* migliora rendering */
+.author, .saga, .date{
+  text-rendering: optimizeLegibility;
+}
+
+
+/* ===== MOSTRA DATA DURANTE HOVER ===== */
+.event{
+  overflow: visible !important;
+}
+
+.card-shell{
+  overflow: visible !important;
+}
+
+.date-wrap{
+  position: relative !important;
+  z-index: 10 !important;
+  overflow: visible !important;
+}
+
+.event:hover .date-wrap{
+  transform: scale(1.2);
+}
+
+.event:hover .card-shell{
+  z-index: 20 !important;
+}
+
+.timeline-wrap{
+  overflow: visible !important;
+}
+
+
+/* ===== FLIP ATTIVO SULLA CARD ===== */
+.card{
+  perspective:1200px !important;
+  overflow:visible !important;
+}
+.card-inner{
+  position:absolute !important;
+  inset:0 !important;
+  transform-style:preserve-3d !important;
+  transition:transform .72s ease !important;
+}
+.card.is-flipped .card-inner{
+  transform:rotateY(180deg) !important;
+}
+.card-face{
+  backface-visibility:hidden !important;
+  -webkit-backface-visibility:hidden !important;
+}
+.card-front{
+  transform:rotateY(0deg) !important;
+}
+.card-back{
+  display:flex !important;
+  transform:rotateY(180deg) !important;
+  background:linear-gradient(180deg,#fffdf8,#f7ecd8) !important;
+}
+.card-shell{
+  cursor:default;
+}
+.back-title{
+  display:flex;
+  justify-content:space-between;
+  align-items:flex-start;
+  gap:10px;
+}
+.link-row{
+  margin-top:auto;
+  display:flex;
+  gap:10px;
+  flex-wrap:wrap;
+}
+.link-row .film-link{
+  margin-top:0 !important;
+}
+.inner-close-btn{
+  width:42px;
+  height:42px;
+}
+.card .close-btn,
+.card .film-link{
+  position:relative;
+  z-index:5;
+}
+
+
+.event.no-hover .card-shell{
+  transform: scale(1) !important;
+  filter: none !important;
+}
+
+
+.card-back{position:relative;}
+.card-back .close-btn{
+  position:absolute;
+  top:8px;
+  right:8px;
+  z-index:5;
+}
+
+
+.book-link{
+  display:inline-block;
+  background:#d6f0ff;
+  border:2px solid #5aa0c2;
+  color:#0e2f3f;
+  text-decoration:none;
+  font-weight:800;
+  font-size:.76rem;
+  padding:6px 10px;
+  border-radius:10px;
+  text-transform:uppercase;
+}
+
+.outside-links{
+  display:flex;
+  justify-content:center;
+  gap:8px;
+  flex-wrap:wrap;
+  margin-top:8px;
+}
+.outside-links a{
+  display:inline-block;
+  text-decoration:none;
+  font-weight:800;
+  font-size:.7rem;
+  line-height:1;
+  padding:7px 10px;
+  border-radius:10px;
+  text-transform:uppercase;
+  box-shadow:0 3px 8px rgba(0,0,0,.10);
+}
+.outside-links .film-link{
+  background:linear-gradient(180deg,#f5dfad,#e3bc73);
+  border:2px solid #b88b43;
+  color:#34220e;
+}
+.outside-links .book-link{
+  background:#d6f0ff;
+  border:2px solid #5aa0c2;
+  color:#0e2f3f;
+}
+
+</style>
+</head>
+<body>
+<div class="app">
+<section class="topbar">
+<h1>AUTORI DEL FANTASY</h1>
+<div class="hint">Clicca sulle card per girarle e scoprire l'autore e la sua opera. Se riclicchi sulla card la girerai di nuovo. SCOPRI TUTTE LE CARD :)</div>
+</section>
+<main class="stage">
+<div class="timeline-wrap">
+<div class="timeline-line" aria-hidden="true"></div>
+
+<article class="event" data-author="L. FRANK BAUM" data-saga="IL MAGO DI OZ" data-year="1900" data-image="L. Frank Baum-Il mago di OZ.png" data-text="L. FRANK BAUM – IL MAGO DI OZ||Mi chiamo L. Frank Baum. Ho scritto la saga del Mago di Oz, che racconta il viaggio di una ragazza in un mondo magico pieno di personaggi strani e meravigliosi. Mi piace raccontare storie semplici ma piene di fantasia." data-film="#">
+  <div class="card-shell">
+    <div class="card-label"><span class="author">L. FRANK BAUM</span><span class="saga">IL MAGO DI OZ</span></div>
+    <div class="card" tabindex="0" role="button" aria-label="Scheda di L. FRANK BAUM">
+      <div class="card-inner">
+        <div class="card-face card-front"><img src="L. Frank Baum-Il mago di OZ.png" alt="L. FRANK BAUM e IL MAGO DI OZ"></div>
+        <div class="card-face card-back">
+          <div class="back-title">
+            
+            <div style="display:flex; gap:8px; align-items:center"></div>
+          </div>
+          <p class="card-text">Mi chiamo L. Frank Baum. Ho scritto la saga del Mago di Oz, che racconta il viaggio di una ragazza in un mondo magico pieno di personaggi strani e meravigliosi. Mi piace raccontare storie semplici ma piene di fantasia.</p>
+</div>
+      </div>
+    </div>
+  </div>
+  <div class="date-wrap" style="order:-1;"><div class="date">1900</div><div class="stem"></div><div class="star">★</div></div>
+</article>
+
+<article class="event" data-author="J.R.R. TOLKIEN" data-saga="IL SIGNORE DEGLI ANELLI" data-year="1954–1955" data-image="J.R.R. Tolkien-Il signore degli anelli.png" data-text="J.R.R. TOLKIEN – IL SIGNORE DEGLI ANELLI||Mi chiamo J.R.R. Tolkien. Ho scritto la saga de Il Signore degli Anelli, che parla di un viaggio difficile per salvare il mondo da un grande male. Amo creare lingue e mondi fantastici molto dettagliati." data-film="#">
+  <div class="card-shell">
+    <div class="card-label"><span class="author">J.R.R. TOLKIEN</span><span class="saga">IL SIGNORE DEGLI ANELLI</span></div>
+    <div class="card" tabindex="0" role="button" aria-label="Scheda di J.R.R. TOLKIEN">
+      <div class="card-inner">
+        <div class="card-face card-front"><img src="J.R.R. Tolkien-Il signore degli anelli.png" alt="J.R.R. TOLKIEN e IL SIGNORE DEGLI ANELLI"></div>
+        <div class="card-face card-back">
+          <div class="back-title">
+            
+            <div style="display:flex; gap:8px; align-items:center"></div>
+          </div>
+          <p class="card-text">Mi chiamo J.R.R. Tolkien. Ho scritto la saga de Il Signore degli Anelli, che parla di un viaggio difficile per salvare il mondo da un grande male. Amo creare lingue e mondi fantastici molto dettagliati.</p>
+</div>
+      </div>
+    </div>
+  </div>
+  <div class="date-wrap" style="order:-1;"><div class="date">1954–1955</div><div class="stem"></div><div class="star">★</div></div>
+</article>
+
+<article class="event" data-author="MICHAEL ENDE" data-saga="LA STORIA INFINITA" data-year="1979" data-image="Michael Ende-La storia infinita.png" data-text="MICHAEL ENDE – LA STORIA INFINITA||Mi chiamo Michael Ende. Ho scritto La storia infinita, una saga che parla di un ragazzo che entra dentro un libro e vive un’avventura tra realtà e immaginazione. Amo raccontare storie profonde e sognanti." data-film="#">
+  <div class="card-shell">
+    <div class="card-label"><span class="author">MICHAEL ENDE</span><span class="saga">LA STORIA INFINITA</span></div>
+    <div class="card" tabindex="0" role="button" aria-label="Scheda di MICHAEL ENDE">
+      <div class="card-inner">
+        <div class="card-face card-front"><img src="Michael Ende-La storia infinita.png" alt="MICHAEL ENDE e LA STORIA INFINITA"></div>
+        <div class="card-face card-back">
+          <div class="back-title">
+            
+            <div style="display:flex; gap:8px; align-items:center"></div>
+          </div>
+          <p class="card-text">Mi chiamo Michael Ende. Ho scritto La storia infinita, una saga che parla di un ragazzo che entra dentro un libro e vive un’avventura tra realtà e immaginazione. Amo raccontare storie profonde e sognanti.</p>
+</div>
+      </div>
+    </div>
+  </div>
+  <div class="date-wrap" style="order:-1;"><div class="date">1979</div><div class="stem"></div><div class="star">★</div></div>
+</article>
+
+<article class="event" data-author="J.K. ROWLING" data-saga="HARRY POTTER" data-year="1997–2007" data-image="J.K. Rowling-Harry Potter.png" data-text="J.K. ROWLING – HARRY POTTER||Mi chiamo J.K. Rowling. Ho scritto la saga di Harry Potter, che racconta la storia di un ragazzo che scopre di essere un mago e cresce affrontando il bene e il male. Mi piace immaginare mondi magici e parlare di amicizia e coraggio." data-film="#">
+  <div class="card-shell">
+    <div class="card-label"><span class="author">J.K. ROWLING</span><span class="saga">HARRY POTTER</span></div>
+    <div class="card" tabindex="0" role="button" aria-label="Scheda di J.K. ROWLING">
+      <div class="card-inner">
+        <div class="card-face card-front"><img src="J.K. Rowling-Harry Potter.png" alt="J.K. ROWLING e HARRY POTTER"></div>
+        <div class="card-face card-back">
+          <div class="back-title">
+            
+            <div style="display:flex; gap:8px; align-items:center"></div>
+          </div>
+          <p class="card-text">Mi chiamo J.K. Rowling. Ho scritto la saga di Harry Potter, che racconta la storia di un ragazzo che scopre di essere un mago e cresce affrontando il bene e il male. Mi piace immaginare mondi magici e parlare di amicizia e coraggio.</p>
+</div>
+      </div>
+    </div>
+  </div>
+  <div class="date-wrap" style="order:-1;"><div class="date">1997–2007</div><div class="stem"></div><div class="star">★</div></div>
+</article>
+
+<article class="event" data-author="NEIL GAIMAN" data-saga="CORALINE" data-year="2002" data-image="Neil Gaiman-Coraline.png" data-text="NEIL GAIMAN – CORALINE||Mi chiamo Neil Gaiman. Scrivo storie come Coraline, che raccontano di mondi nascosti e misteriosi dietro la realtà. Mi piace mescolare fantasia e un po’ di inquietudine per far riflettere chi legge." data-film="#">
+  <div class="card-shell">
+    <div class="card-label"><span class="author">NEIL GAIMAN</span><span class="saga">CORALINE</span></div>
+    <div class="card" tabindex="0" role="button" aria-label="Scheda di NEIL GAIMAN">
+      <div class="card-inner">
+        <div class="card-face card-front"><img src="Neil Gaiman-Coraline.png" alt="NEIL GAIMAN e CORALINE"></div>
+        <div class="card-face card-back">
+          <div class="back-title">
+            
+            <div style="display:flex; gap:8px; align-items:center"></div>
+          </div>
+          <p class="card-text">Mi chiamo Neil Gaiman. Scrivo storie come Coraline, che raccontano di mondi nascosti e misteriosi dietro la realtà. Mi piace mescolare fantasia e un po’ di inquietudine per far riflettere chi legge.</p>
+</div>
+      </div>
+    </div>
+  </div>
+  <div class="date-wrap" style="order:-1;"><div class="date">2002</div><div class="stem"></div><div class="star">★</div></div>
+</article>
+
+<article class="event" data-author="RICK RIORDAN" data-saga="PERCY JACKSON" data-year="2005" data-image="Rick Riordan-Percy Jackson.png" data-text="RICK RIORDAN – PERCY JACKSON||Mi chiamo Rick Riordan. Ho scritto la saga di Percy Jackson, che racconta le avventure di un ragazzo che scopre di essere figlio di un dio e vive tra il mondo moderno e la mitologia. Mi piace unire l’umorismo all’azione e rendere le storie divertenti." data-film="#">
+  <div class="card-shell">
+    <div class="card-label"><span class="author">RICK RIORDAN</span><span class="saga">PERCY JACKSON</span></div>
+    <div class="card" tabindex="0" role="button" aria-label="Scheda di RICK RIORDAN">
+      <div class="card-inner">
+        <div class="card-face card-front"><img src="Rick Riordan-Percy Jackson.png" alt="RICK RIORDAN e PERCY JACKSON"></div>
+        <div class="card-face card-back">
+          <div class="back-title">
+            
+            <div style="display:flex; gap:8px; align-items:center"></div>
+          </div>
+          <p class="card-text">Mi chiamo Rick Riordan. Ho scritto la saga di Percy Jackson, che racconta le avventure di un ragazzo che scopre di essere figlio di un dio e vive tra il mondo moderno e la mitologia. Mi piace unire l’umorismo all’azione e rendere le storie divertenti.</p>
+</div>
+      </div>
+    </div>
+  </div>
+  <div class="date-wrap" style="order:-1;"><div class="date">2005</div><div class="stem"></div><div class="star">★</div></div>
+</article>
+
+</div>
+</main>
+</div>
+
+<div class="modal" id="modal" aria-hidden="true">
+  <div class="modal-card" id="modalCard">
+    <section class="modal-side modal-front">
+      <div class="modal-front">
+        <div class="image-side"><img id="modalImage" src="" alt=""></div>
+        <div class="modal-front-info">
+          <div class="modal-top">
+            <div class="modal-heading"><span class="modal-author" id="modalAuthor"></span><span class="modal-saga" id="modalSaga"></span></div>
+            
+          </div>
+          <span class="modal-year" id="modalYearFront"></span>
+          <p class="modal-help">Questa è la parte frontale. Clicca ancora sulla scheda grande per vedere il retro.</p>
+        </div>
+      </div>
+    </section>
+
+    <section class="modal-side modal-back">
+      <div class="modal-back-body">
+        <div class="modal-top">
+          <div class="modal-heading"><span class="modal-author" id="modalAuthorBack"></span><span class="modal-saga" id="modalSagaBack"></span></div>
+          <div style="display:flex; gap:10px; align-items:center">
+            
+            
+          </div>
+        </div>
+        <p class="modal-text" id="modalText"></p>
+        <div class="modal-bottom">
+          <span class="modal-year" id="modalYear"></span>
+</div>
+      </div>
+    </section>
+  </div>
+</div>
+
+<script>
+
+const cards = Array.from(document.querySelectorAll('.card'));
+
+
+
+cards.forEach(card => {
+  card.addEventListener('click', e => {
+    if(e.target.closest('.audio-btn') || e.target.closest('.close-btn') || e.target.closest('.film-link') || e.target.closest('.book-link')) return;
+    card.classList.toggle('is-flipped');
+  });
+
+  card.addEventListener('keydown', e => {
+    if(e.key === 'Enter' || e.key === ' '){
+      e.preventDefault();
+      card.classList.toggle('is-flipped');
+      }
+    if(e.key === 'Escape'){
+      card.classList.remove('is-flipped');
+      }
+  });
+});
+
+
+document.querySelectorAll('.inner-close-btn').forEach(btn => {
+  btn.addEventListener('click', e => {
+    e.stopPropagation();
+    const card = btn.closest('.card');
+    if(card) card.classList.remove('is-flipped');
+  });
+});
+
+document.querySelectorAll('.film-link, .book-link').forEach(link => {
+  link.addEventListener('click', e => e.stopPropagation());
+});
+
+
+document.querySelectorAll('.card .close-btn').forEach(btn => {
+  btn.addEventListener('click', (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+
+    const card = btn.closest('.card');
+    const event = btn.closest('.event');
+
+    if(card) card.classList.remove('is-flipped');
+
+    if(event){
+      event.classList.add('no-hover');
+      setTimeout(() => event.classList.remove('no-hover'), 80);
+    }
+
+  });
+});
+</script>
+</body>
+
+</html>
